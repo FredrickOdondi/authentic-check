@@ -21,7 +21,7 @@ export const FileUpload = ({ onFileSelect, isAnalyzing }: FileUploadProps) => {
       if (rejectedFiles.length > 0) {
         const rejection = rejectedFiles[0];
         if (rejection.errors[0]?.code === "file-too-large") {
-          setError("File is too large. Maximum size is 10MB.");
+          setError("File is too large. Maximum size is 100MB.");
         } else if (rejection.errors[0]?.code === "file-invalid-type") {
           setError("Invalid file type. Please upload a PDF or Word document.");
         }
@@ -43,7 +43,7 @@ export const FileUpload = ({ onFileSelect, isAnalyzing }: FileUploadProps) => {
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"],
     },
     maxFiles: 1,
-    maxSize: 10 * 1024 * 1024, // 10MB
+    maxSize: 100 * 1024 * 1024, // 100MB
     disabled: isAnalyzing,
   });
 
@@ -132,7 +132,7 @@ export const FileUpload = ({ onFileSelect, isAnalyzing }: FileUploadProps) => {
                     ))}
                   </div>
                   <p className="text-xs text-muted-foreground mt-4">
-                    Maximum file size: 10MB
+                    Maximum file size: 100MB
                   </p>
                 </motion.div>
               ) : (
