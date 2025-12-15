@@ -7,36 +7,26 @@ import { FeaturesSection } from "@/components/FeaturesSection";
 import { HowItWorks } from "@/components/HowItWorks";
 import { Footer } from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
+import { extractText } from "@/lib/documentParser";
+import { analyzeText } from "@/lib/textAnalyzer";
 
-// Mock analysis function - will be replaced with real AI analysis
-const mockAnalyze = async (file: File) => {
-  // Simulate API call
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+const analyzeDocument = async (file: File) => {
+  // Extract text from the document
+  const text = await extractText(file);
+  
+  if (!text || text.length < 50) {
+    throw new Error("Could not extract enough text from the document. Please ensure the document contains readable text.");
+  }
+  
+  // Analyze the extracted text
+  const analysis = analyzeText(text);
   
   return {
-    plagiarismScore: Math.floor(Math.random() * 40) + 5,
-    aiScore: Math.floor(Math.random() * 50) + 10,
-    wordCount: Math.floor(Math.random() * 5000) + 1000,
+    plagiarismScore: analysis.plagiarismScore,
+    aiScore: analysis.aiScore,
+    wordCount: analysis.wordCount,
     fileName: file.name,
-    highlights: [
-      {
-        type: "plagiarism" as const,
-        text: "The quick brown fox jumps over the lazy dog, demonstrating every letter of the English alphabet in a single sentence.",
-        source: "https://example.com/source",
-        confidence: 87,
-      },
-      {
-        type: "ai" as const,
-        text: "In conclusion, this analysis reveals significant patterns that suggest a systematic approach to the underlying methodology.",
-        confidence: 92,
-      },
-      {
-        type: "plagiarism" as const,
-        text: "Furthermore, the implementation of these strategies has proven to be remarkably effective in achieving the desired outcomes.",
-        source: "https://academic-journal.org/article",
-        confidence: 76,
-      },
-    ],
+    highlights: analysis.highlights,
   };
 };
 
@@ -48,7 +38,7 @@ const Index = () => {
   const handleFileSelect = async (file: File) => {
     setIsAnalyzing(true);
     try {
-      const analysisResults = await mockAnalyze(file);
+      const analysisResults = await analyzeDocument(file);
       setResults(analysisResults);
       toast({
         title: "Analysis Complete",
